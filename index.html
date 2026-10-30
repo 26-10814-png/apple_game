@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>애플게임</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nunito:wght@700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #FFF9F2;
+      --card-bg: #FFFFFF;
+      --apple-red: #FF5A5F;
+      --apple-shine: #FFA4A7;
+      --leaf-green: #48CFAD;
+      --leaf-dark: #37BC9B;
+      --wood-brown: #8D5B4C;
+      --sunny-yellow: #FED766;
+      --soft-shadow: 0 10px 25px rgba(255, 90, 95, 0.12);
+      --btn-shadow: 0 6px 0 #E2484D;
+      --text-main: #4A3E3D;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #FFF5EB 0%, #FFEBE6 100%);
+      font-family: 'Jua', 'Nunito', sans-serif;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+      touch-action: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 20px 24px 24px;
+      box-shadow: 0 18px 40px rgba(141, 91, 76, 0.15);
+      border: 4px solid #FFE4DB;
+      position: relative;
+    }
+
+    /* 상단 헤더 & 상태바 */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 3px dashed #FFE0D6;
+    }
+
+    .title-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 24px;
+      color: #FF5A5F;
+      text-shadow: 1px 1px 0 #FFD4CE;
+    }
+
+    .title-badge .apple-icon {
+      font-size: 30px;
+      animation: float 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      from {
+        transform: translateY(0px) rotate(-6deg);
+      }
+
+      to {
+        transform: translateY(-6px) rotate(6deg);
+      }
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-pill {
+      background: #FFF2ED;
+      border: 2px solid #FFD4C5;
+      border-radius: 18px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-pill.timer {
+      background: #FFFBE6;
+      border-color: #FCE89B;
+    }
+
+    .stat-pill.high-score {
+      background: #EDFBF5;
+      border-color: #B9F0DB;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #8C7873;
+      margin-bottom: 2px;
+    }
+
+    .stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FF5A5F;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-pill.timer .stat-val {
+      color: #DDA205;
+    }
+
+    .stat-pill.high-score .stat-val {
+      color: #2BA685;
+    }
+
+    /* 컨트롤 버튼 바 */
+    .controls-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      font-family: inherit;
+      border: none;
+      border-radius: 14px;
+      padding: 8px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s ease;
+      font-weight: 700;
+    }
+
+    .btn:active {
+      transform: translateY(3px) !important;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .btn-pause {
+      background: #FFB347;
+      color: #fff;
+      box-shadow: 0 4px 0 #D98200;
+    }
+
+    .btn-restart {
+      background: #FF6B6B;
+      color: #fff;
+      box-shadow: 0 4px 0 #D93B3B;
+    }
+
+    .btn-rank {
+      background: #48CFAD;
+      color: #fff;
+      box-shadow: 0 4px 0 #28A585;
+    }
+
+    .btn-sound {
+      background: #E5E9F2;
+      color: #65748B;
+      box-shadow: 0 4px 0 #CBD5E1;
+      padding: 8px 14px;
+    }
+
+    /* 게임 보드 영역 */
+    .board-container {
+      position: relative;
+      background: #FFFAF4;
+      border: 3px solid #F5E2D5;
+      border-radius: 20px;
+      padding: 10px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      touch-action: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-gap: 5px;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 개별 사과 디자인 */
+    .apple {
+      aspect-ratio: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .apple-inner {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 35% 35%, #FF8387 0%, #FF4D52 70%, #E83339 100%);
+      border-radius: 50% 50% 46% 46%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset -2px -3px 0 rgba(0, 0, 0, 0.15), 0 3px 6px rgba(232, 51, 57, 0.25);
+      position: relative;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    /* 꼭지 & 잎사귀 */
+    .apple-inner::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      width: 3px;
+      height: 5px;
+      background: #7D4C3A;
+      border-radius: 2px;
+    }
+
+    .apple-inner::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      right: 22%;
+      width: 7px;
+      height: 5px;
+      background: #50D890;
+      border-radius: 6px 0 6px 0;
+      transform: rotate(20deg);
+    }
+
+    .apple-num {
+      position: relative;
+      font-size: 17px;
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow: 1px 1px 2px rgba(140, 20, 20, 0.6);
+      z-index: 2;
+    }
+
+    /* 선택/하이라이트 상태 */
+    .apple.selected .apple-inner {
+      background: radial-gradient(circle at 35% 35%, #FFF078 0%, #FFD000 70%, #E5B300 100%);
+      box-shadow: 0 0 12px rgba(255, 208, 0, 0.9), inset -2px -3px 0 rgba(0, 0, 0, 0.15);
+      transform: scale(1.1);
+    }
+
+    .apple.selected .apple-num {
+      color: #7A4B00;
+      text-shadow: none;
+    }
+
+    /* 터지는 애니메이션 */
+    .apple.popping {
+      animation: popOut 0.35s ease forwards;
+    }
+
+    @keyframes popOut {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.35) rotate(15deg);
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+
+    /* 빈 자리 (사라진 사과) */
+    .apple.empty {
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    /* 드래그 선택 박스 */
+    .drag-selection-box {
+      position: absolute;
+      border: 3px dashed #FF5A5F;
+      background: rgba(255, 90, 95, 0.22);
+      border-radius: 12px;
+      pointer-events: none;
+      z-index: 20;
+      display: none;
+      box-shadow: 0 0 15px rgba(255, 90, 95, 0.3);
+    }
+
+    /* 드래그 합계 오버레이 인디케이터 */
+    .drag-sum-indicator {
+      position: absolute;
+      background: #FF5A5F;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 800;
+      pointer-events: none;
+      z-index: 25;
+      display: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transform: translate(-50%, -100%);
+      white-space: nowrap;
+    }
+
+    .drag-sum-indicator.is-ten {
+      background: #2ECC71;
+      animation: pulse 0.3s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: translate(-50%, -100%) scale(1);
+      }
+
+      to {
+        transform: translate(-50%, -100%) scale(1.12);
+      }
+    }
+
+    /* 일시정지 오버레이 */
+    .pause-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 245, 240, 0.94);
+      backdrop-filter: blur(4px);
+      z-index: 30;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .pause-overlay.hidden {
+      display: none;
+    }
+
+    .pause-title {
+      font-size: 32px;
+      color: #FF6B6B;
+    }
+
+    /* 모달 팝업 공통 */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 20px;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 28px;
+      padding: 28px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+      border: 4px solid #FFE4DB;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-backdrop.show .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 26px;
+      color: #FF5A5F;
+      margin-bottom: 12px;
+    }
+
+    /* 랭킹 리스트 */
+    .rank-list {
+      list-style: none;
+      margin: 16px 0;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #FFF5F0;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: 15px;
+      border: 1px solid #FFE2D8;
+    }
+
+    .rank-item.top-1 {
+      background: #FFF9DB;
+      border-color: #FFE58F;
+      font-weight: 800;
+    }
+
+    .rank-item.top-2 {
+      background: #F0F4F8;
+      border-color: #D3DFEB;
+      font-weight: 800;
+    }
+
+    .rank-item.top-3 {
+      background: #FAF0E6;
+      border-color: #EBD6C3;
+      font-weight: 800;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rank-score {
+      color: #FF5A5F;
+      font-weight: 800;
+    }
+
+    .nickname-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 16px;
+      padding: 12px 16px;
+      border: 2px solid #FFD0C0;
+      border-radius: 14px;
+      outline: none;
+      margin: 12px 0 16px;
+      text-align: center;
+      background: #FFF9F7;
+    }
+
+    .nickname-input:focus {
+      border-color: #FF5A5F;
+      background: #fff;
+    }
+
+    /* 콤보 이펙트 플로팅 텍스트 */
+    .combo-floater {
+      position: absolute;
+      color: #FF4D52;
+      font-size: 22px;
+      font-weight: 900;
+      pointer-events: none;
+      z-index: 40;
+      text-shadow: 2px 2px 0 #FFF, -2px -2px 0 #FFF, 2px -2px 0 #FFF, -2px 2px 0 #FFF;
+      animation: floatUpFade 0.7s forwards ease-out;
+    }
+
+    @keyframes floatUpFade {
+      0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0;
+      }
+
+      20% {
+        transform: translateY(-10px) scale(1.2);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-40px) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* 반응형 화면 처리 */
+    @media (max-width: 600px) {
+      .container {
+        padding: 14px;
+        border-radius: 20px;
+      }
+
+      .title-badge {
+        font-size: 20px;
+      }
+
+      .apple-num {
+        font-size: 14px;
+      }
+
+      .grid {
+        grid-gap: 3px;
+      }
+
+      .stat-val {
+        font-size: 20px;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 6px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="title-badge">
+        <span class="apple-icon">🍎</span>
+        <span>애플게임</span>
+      </div>
+      <button class="btn btn-sound" id="soundBtn" title="효과음 켜기/끄기">🔊 소리 ON</button>
+    </header>
+
+    <!-- 게임 상태 표시 -->
+    <div class="stats-bar">
+      <div class="stat-pill timer">
+        <span class="stat-label">남은 시간 ⏳</span>
+        <span class="stat-val" id="timerDisplay">120</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-label">현재 점수 🎯</span>
+        <span class="stat-val" id="scoreDisplay">0</span>
+      </div>
+      <div class="stat-pill high-score">
+        <span class="stat-label">최고 기록 👑</span>
+        <span class="stat-val" id="highScoreDisplay">0</span>
+      </div>
+    </div>
+
+    <!-- 컨트롤 버튼 -->
+    <div class="controls-bar">
+      <button class="btn btn-pause" id="pauseBtn">⏸️ 일시 정지</button>
+      <button class="btn btn-restart" id="restartBtn">🔄 다시 시작</button>
+      <button class="btn btn-rank" id="rankBtn">🏆 랭킹 보기</button>
+    </div>
+
+    <!-- 사과 보드 -->
+    <div class="board-container" id="boardContainer">
+      <div class="grid" id="appleGrid"></div>
+
+      <!-- 드래그 선택 사각형 -->
+      <div class="drag-selection-box" id="selectionBox"></div>
+
+      <!-- 선택 합계 플로팅 뱃지 -->
+      <div class="drag-sum-indicator" id="sumIndicator">합: 0</div>
+
+      <!-- 일시정지 오버레이 -->
+      <div class="pause-overlay hidden" id="pauseOverlay">
+        <div class="pause-title">☕ 잠시 쉬는 시간</div>
+        <p style="color: #8C7873; margin-bottom: 8px;">버튼을 눌러 다시 사과를 모아보세요!</p>
+        <button class="btn btn-pause" id="resumeBtn" style="font-size: 18px; padding: 10px 24px;">▶️ 계속하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 게임 오버 / 점수 등록 모달 -->
+  <div class="modal-backdrop" id="gameOverModal">
+    <div class="modal-card">
+      <div style="font-size: 48px; margin-bottom: 8px;">🎉</div>
+      <h2 class="modal-title">시간 종료!</h2>
+      <p style="font-size: 17px; margin-bottom: 12px; color: #6E5A55;">
+        최종 점수: <b style="color: #FF5A5F; font-size: 26px;" id="finalScoreDisplay">0</b> 점
+      </p>
+      <p style="font-size: 14px; color: #88726C;">명예의 전당에 닉네임을 남겨보세요!</p>
+      <input type="text" class="nickname-input" id="nicknameInput" maxlength="10" placeholder="닉네임 입력 (최대 10자)">
+      <div style="display: flex; gap: 8px; justify-content: center;">
+        <button class="btn btn-restart" id="saveScoreBtn">기록 저장 & 확인</button>
+        <button class="btn btn-sound" id="skipSaveBtn">다음에 하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 랭킹 모달 -->
+  <div class="modal-backdrop" id="rankingModal">
+    <div class="modal-card">
+      <h2 class="modal-title">🏆 명예의 전당 (Top 10)</h2>
+      <ul class="rank-list" id="rankList">
+        <!-- JS 동적 생성 -->
+      </ul>
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 16px;">
+        <button class="btn btn-sound" id="resetRankBtn" style="font-size: 13px;">기록 초기화</button>
+        <button class="btn btn-restart" id="closeRankBtn">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       사운드 효과 생성기 (Web Audio API) - 외부 에셋 없이 경쾌한 소리 재생
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+      }
+
+      playPop() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      }
+
+      playSuccess(count = 2) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const baseNotes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const now = this.ctx.currentTime;
+
+        baseNotes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+
+          gain.gain.setValueAtTime(0, now + idx * 0.05);
+          gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.05 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.22);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.05);
+          osc.stop(now + idx * 0.05 + 0.22);
+        });
+      }
+
+      playGameOver() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const tones = [587.33, 523.25, 440, 349.23];
+        const now = this.ctx.currentTime;
+
+        tones.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+
+          gain.gain.setValueAtTime(0.18, now + idx * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.25);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.12);
+          osc.stop(now + idx * 0.12 + 0.25);
+        });
+      }
+    }
+
+    /* ==========================================================================
+       사과게임 코어 로직 & UI 관리
+       ========================================================================== */
+    const ROWS = 17;
+    const COLS = 10;
+    const TOTAL_CELLS = ROWS * COLS;
+    const INITIAL_TIME = 120; // 120초
+
+    const sound = new SoundEngine();
+
+    let apples = []; // { id, row, col, value, removed }
+    let score = 0;
+    let timeLeft = INITIAL_TIME;
+    let timerInterval = null;
+    let isPaused = false;
+    let isGameOver = false;
+
+    // 드래그 상태
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let selectedApples = [];
+
+    // DOM 요소 캐시
+    const appleGrid = document.getElementById('appleGrid');
+    const boardContainer = document.getElementById('boardContainer');
+    const selectionBox = document.getElementById('selectionBox');
+    const sumIndicator = document.getElementById('sumIndicator');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const highScoreDisplay = document.getElementById('highScoreDisplay');
+    const pauseOverlay = document.getElementById('pauseOverlay');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const soundBtn = document.getElementById('soundBtn');
+    const rankBtn = document.getElementById('rankBtn');
+    const gameOverModal = document.getElementById('gameOverModal');
+    const finalScoreDisplay = document.getElementById('finalScoreDisplay');
+    const nicknameInput = document.getElementById('nicknameInput');
+    const saveScoreBtn = document.getElementById('saveScoreBtn');
+    const skipSaveBtn = document.getElementById('skipSaveBtn');
+    const rankingModal = document.getElementById('rankingModal');
+    const rankList = document.getElementById('rankList');
+    const closeRankBtn = document.getElementById('closeRankBtn');
+    const resetRankBtn = document.getElementById('resetRankBtn');
+
+    /* 로컬 스토리지 랭킹 관리 */
+    const RANK_STORAGE_KEY = 'apple_game_rankings_v1';
+
+    function getRankings() {
+      try {
+        const data = localStorage.getItem(RANK_STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveRanking(name, scoreVal) {
+      if (!name.trim()) name = '익명의 사과농부';
+      const list = getRankings();
+      list.push({
+        name: name.trim().slice(0, 10),
+        score: scoreVal,
+        date: new Date().toLocaleDateString()
+      });
+      list.sort((a, b) => b.score - a.score);
+      const top10 = list.slice(0, 10);
+      localStorage.setItem(RANK_STORAGE_KEY, JSON.stringify(top10));
+      updateHighScoreUI();
+      return top10;
+    }
+
+    function updateHighScoreUI() {
+      const list = getRankings();
+      const top = list.length > 0 ? list[0].score : 0;
+      highScoreDisplay.textContent = top;
+    }
+
+    function renderRankingModal() {
+      const list = getRankings();
+      rankList.innerHTML = '';
+      if (list.length === 0) {
+        rankList.innerHTML = '<li style="padding: 20px; color: #88726C;">아직 등록된 랭킹 기록이 없습니다.<br>첫 챔피언에 도전해보세요! 🍎</li>';
+        return;
+      }
+
+      list.forEach((entry, idx) => {
+        const li = document.createElement('li');
+        const rankClass = idx === 0 ? 'top-1' : idx === 1 ? 'top-2' : idx === 2 ? 'top-3' : '';
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}등`;
+        li.className = `rank-item ${rankClass}`;
+        li.innerHTML = `
+          <div class="rank-badge">
+            <span>${medal}</span>
+            <span>${escapeHtml(entry.name)}</span>
+          </div>
+          <div>
+            <span class="rank-score">${entry.score}점</span>
+            <span style="font-size: 11px; color: #9A8985; margin-left: 6px;">(${entry.date})</span>
+          </div>
+        `;
+        rankList.appendChild(li);
+      });
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    /* 게임 초기화 및 생성 */
+    function initGame() {
+      clearInterval(timerInterval);
+      score = 0;
+      timeLeft = INITIAL_TIME;
+      isPaused = false;
+      isGameOver = false;
+      isDragging = false;
+      apples = [];
+
+      scoreDisplay.textContent = '0';
+      timerDisplay.textContent = timeLeft;
+      pauseOverlay.classList.add('hidden');
+      pauseBtn.innerHTML = '⏸️ 일시 정지';
+      gameOverModal.classList.remove('show');
+      rankingModal.classList.remove('show');
+      updateHighScoreUI();
+
+      appleGrid.innerHTML = '';
+
+      // 사과 생성 (1~9 랜덤 숫자)
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const id = r * COLS + c;
+          const val = Math.floor(Math.random() * 9) + 1;
+          apples.push({
+            id,
+            row: r,
+            col: c,
+            value: val,
+            removed: false
+          });
+
+          const appleEl = document.createElement('div');
+          appleEl.className = 'apple';
+          appleEl.dataset.id = id;
+          appleEl.innerHTML = `
+            <div class="apple-inner">
+              <span class="apple-num">${val}</span>
+            </div>
+          `;
+          appleGrid.appendChild(appleEl);
+        }
+      }
+
+      startTimer();
+    }
+
+    /* 타이머 관리 */
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (isPaused || isGameOver) return;
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function togglePause() {
+      if (isGameOver) return;
+      isPaused = !isPaused;
+      if (isPaused) {
+        pauseOverlay.classList.remove('hidden');
+        pauseBtn.innerHTML = '▶️ 계속하기';
+      } else {
+        pauseOverlay.classList.add('hidden');
+        pauseBtn.innerHTML = '⏸️ 일시 정지';
+      }
+    }
+
+    function endGame() {
+      isGameOver = true;
+      clearInterval(timerInterval);
+      sound.playGameOver();
+      finalScoreDisplay.textContent = score;
+      nicknameInput.value = '';
+      gameOverModal.classList.add('show');
+    }
+
+    /* 드래그 및 영역 판정 */
+    function getPointerPos(e) {
+      const rect = boardContainer.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top,
+        clientX,
+        clientY
+      };
+    }
+
+    function onPointerDown(e) {
+      if (isPaused || isGameOver) return;
+      // 마우스 우클릭 제외
+      if (e.button && e.button !== 0) return;
+
+      isDragging = true;
+      const pos = getPointerPos(e);
+      dragStartX = pos.x;
+      dragStartY = pos.y;
+
+      selectionBox.style.left = `${dragStartX}px`;
+      selectionBox.style.top = `${dragStartY}px`;
+      selectionBox.style.width = '0px';
+      selectionBox.style.height = '0px';
+      selectionBox.style.display = 'block';
+
+      sumIndicator.style.display = 'block';
+      updateSelection(pos.x, pos.y);
+      sound.init();
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging || isPaused || isGameOver) return;
+      const pos = getPointerPos(e);
+      updateSelection(pos.x, pos.y);
+    }
+
+    function updateSelection(currentX, currentY) {
+      const boxLeft = Math.min(dragStartX, currentX);
+      const boxTop = Math.min(dragStartY, currentY);
+      const boxWidth = Math.abs(currentX - dragStartX);
+      const boxHeight = Math.abs(currentY - dragStartY);
+
+      selectionBox.style.left = `${boxLeft}px`;
+      selectionBox.style.top = `${boxTop}px`;
+      selectionBox.style.width = `${boxWidth}px`;
+      selectionBox.style.height = `${boxHeight}px`;
+
+      // 인디케이터 위치
+      sumIndicator.style.left = `${currentX}px`;
+      sumIndicator.style.top = `${Math.max(15, boxTop - 8)}px`;
+
+      // 선택된 사과 계산
+      const boxRect = {
+        left: boxLeft,
+        right: boxLeft + boxWidth,
+        top: boxTop,
+        bottom: boxTop + boxHeight
+      };
+
+      const boardRect = boardContainer.getBoundingClientRect();
+      const nextSelected = [];
+      let currentSum = 0;
+
+      const appleElements = appleGrid.children;
+      for (let i = 0; i < apples.length; i++) {
+        const item = apples[i];
+        if (item.removed) continue;
+
+        const el = appleElements[i];
+        const elRect = el.getBoundingClientRect();
+
+        // boardContainer 기준 좌표로 변환
+        const itemBox = {
+          left: elRect.left - boardRect.left,
+          right: elRect.right - boardRect.left,
+          top: elRect.top - boardRect.top,
+          bottom: elRect.bottom - boardRect.top,
+          centerX: (elRect.left + elRect.right) / 2 - boardRect.left,
+          centerY: (elRect.top + elRect.bottom) / 2 - boardRect.top
+        };
+
+        // 중심점이 박스 안에 포함되거나 교차 영역이 일정 이상일 때 선택
+        const isOverlap = !(
+          boxRect.right < itemBox.centerX ||
+          boxRect.left > itemBox.centerX ||
+          boxRect.bottom < itemBox.centerY ||
+          boxRect.top > itemBox.centerY
+        );
+
+        if (isOverlap) {
+          nextSelected.push(item);
+          currentSum += item.value;
+          el.classList.add('selected');
+        } else {
+          el.classList.remove('selected');
+        }
+      }
+
+      selectedApples = nextSelected;
+      sumIndicator.textContent = `합: ${currentSum} ${currentSum === 10 ? '✨ (정답!)' : ''}`;
+      if (currentSum === 10) {
+        sumIndicator.classList.add('is-ten');
+      } else {
+        sumIndicator.classList.remove('is-ten');
+      }
+    }
+
+    function onPointerUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      selectionBox.style.display = 'none';
+      sumIndicator.style.display = 'none';
+      sumIndicator.classList.remove('is-ten');
+
+      // 선택된 사과의 합 계산
+      const sum = selectedApples.reduce((acc, cur) => acc + cur.value, 0);
+
+      if (sum === 10 && selectedApples.length >= 2) {
+        handleSuccess(selectedApples);
+      } else {
+        // 실패 시 선택 해제
+        selectedApples.forEach(app => {
+          const el = appleGrid.children[app.id];
+          if (el) el.classList.remove('selected');
+        });
+      }
+
+      selectedApples = [];
+    }
+
+    /* 사과 제거 성공 처리 */
+    function handleSuccess(clearedApples) {
+      sound.playSuccess(clearedApples.length);
+      const earnedScore = clearedApples.length * 10;
+      score += earnedScore;
+      scoreDisplay.textContent = score;
+
+      // 플로팅 점수 표시
+      showScoreFloater(`+${earnedScore} 점! 🍎`, clearedApples[0]);
+
+      clearedApples.forEach(app => {
+        app.removed = true;
+        const el = appleGrid.children[app.id];
+        if (el) {
+          el.classList.remove('selected');
+          el.classList.add('popping');
+          setTimeout(() => {
+            el.classList.remove('popping');
+            el.classList.add('empty');
+          }, 320);
+        }
+      });
+
+      // 올 클리어 체크
+      const remaining = apples.filter(a => !a.removed);
+      if (remaining.length === 0) {
+        score += 500; // 올클리어 보너스
+        scoreDisplay.textContent = score;
+        endGame();
+      }
+    }
+
+    function showScoreFloater(text, refApple) {
+      const el = appleGrid.children[refApple.id];
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const boardRect = boardContainer.getBoundingClientRect();
+
+      const floater = document.createElement('div');
+      floater.className = 'combo-floater';
+      floater.textContent = text;
+      floater.style.left = `${rect.left - boardRect.left + 5}px`;
+      floater.style.top = `${rect.top - boardRect.top}px`;
+      boardContainer.appendChild(floater);
+
+      setTimeout(() => floater.remove(), 700);
+    }
+
+    /* 이벤트 리스너 바인딩 */
+    boardContainer.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    boardContainer.addEventListener('touchstart', onPointerDown, { passive: false });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    pauseBtn.addEventListener('click', togglePause);
+    resumeBtn.addEventListener('click', togglePause);
+    restartBtn.addEventListener('click', () => {
+      if (confirm('게임을 새로 시작하시겠습니까?')) {
+        initGame();
+      }
+    });
+
+    soundBtn.addEventListener('click', () => {
+      const isSoundOn = sound.toggle();
+      soundBtn.innerHTML = isSoundOn ? '🔊 소리 ON' : '🔈 소리 OFF';
+      sound.init();
+    });
+
+    rankBtn.addEventListener('click', () => {
+      renderRankingModal();
+      rankingModal.classList.add('show');
+    });
+
+    closeRankBtn.addEventListener('click', () => {
+      rankingModal.classList.remove('show');
+    });
+
+    resetRankBtn.addEventListener('click', () => {
+      if (confirm('저장된 랭킹 기록을 모두 삭제하시겠습니까?')) {
+        localStorage.removeItem(RANK_STORAGE_KEY);
+        renderRankingModal();
+        updateHighScoreUI();
+      }
+    });
+
+    saveScoreBtn.addEventListener('click', () => {
+      const name = nicknameInput.value;
+      saveRanking(name, score);
+      gameOverModal.classList.remove('show');
+      renderRankingModal();
+      rankingModal.classList.add('show');
+    });
+
+    skipSaveBtn.addEventListener('click', () => {
+      gameOverModal.classList.remove('show');
+    });
+
+    // 시작
+    window.addEventListener('DOMContentLoaded', () => {
+      initGame();
+    });
+  </script>
+</body>
+
+</html>
